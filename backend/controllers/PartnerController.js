@@ -1,101 +1,66 @@
-const mysql = require('mysql2/promise');
-const config = require('../config');
+const Partner = require('../models/Partner');
 
 const PartnerController = {
-  getAllPartners: async (req, res) => {
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      const [rows] = await connection.execute('SELECT * FROM partners');
-      res.json(rows);
-    } catch (error) {
-      console.error('Error fetching partners:', error);
-      res.status(500).send('Error fetching partners');
-    } finally {
-      if (connection) connection.end();
+    getAllPartners: async (req, res) => {
+        try {
+            const partners = await Partner.getAll();
+            res.json(partners);
+        } catch (error) {
+            console.error('Error getting all partners:', error);
+            res.status(500).json({ error: 'Error getting all partners' });
+        }
+    },
+
+    getPartnerById: async (req, res) => {
+        const id = req.params.id;
+        try {
+            const partner = await Partner.getById(id);
+            if (!partner) {
+                return res.status(404).json({ error: 'Partner not found' });
+            }
+            res.json(partner);
+        } catch (error) {
+            console.error('Error getting partner by ID:', error);
+            res.status(500).json({ error: 'Error getting partner by ID' });
+        }
+    },
+
+    createPartner: async (req, res) => {
+        const partnerData = req.body;
+        try {
+            const newPartner = await Partner.create(partnerData);
+            res.status(201).json({ message: 'Partner created successfully', partner: newPartner });
+        } catch (error) {
+            console.error('Error creating partner:', error);
+            res.status(500).json({ error: 'Error creating partner' });
+        }
+    },
+
+    updatePartner: async (req, res) => {
+        const id = req.params.id;
+        const partnerData = req.body;
+        try {
+            const updatedPartner = await Partner.update(id, partnerData);
+            if (!updatedPartner) {
+                return res.status(404).json({ error: 'Partner not found' });
+            }
+            res.json({ message: 'Partner updated successfully', partner: updatedPartner });
+        } catch (error) {
+            console.error('Error updating partner:', error);
+            res.status(500).json({ error: 'Error updating partner' });
+        }
+    },
+
+    deletePartner: async (req, res) => {
+        const id = req.params.id;
+        try {
+            await Partner.delete(id);
+            res.json({ message: 'Partner deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting partner:', error);
+            res.status(500).json({ error: 'Error deleting partner' });
+        }
     }
-  },
-
-  getPartnerById: async (req, res) => {
-    const { id } = req.params;
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      const [rows] = await connection.execute('SELECT * FROM partners WHERE id = ?', [parseInt(id)]);
-      if (rows.length === 0) {
-        res.status(404).send('Partner not found');
-      } else {
-        res.json(rows[0]);
-      }
-    } catch (error) {
-      console.error('Error fetching partner:', error);
-      res.status(500).send('Error fetching partner');
-    } finally {
-      if (connection) connection.end();
-    }
-  },
-
-  createPartner: async (req, res) => {
-    const { name, link } = req.body;
-    let image = '';
-
-    if (req.files && req.files.image) {
-      const file = req.files.image;
-      console.log('Simulating uploading file: ', file.name);
-      image = file.name; // Simulate storing file name in database
-    }
-
-
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      const [result] = await connection.execute('INSERT INTO partners (name, image, link) VALUES (?, ?, ?)', [name, image, link]);
-      res.status(201).json({ id: result.insertId, name, image, link });
-    } catch (error) {
-      console.error('Error creating partner:', error);
-      res.status(500).send('Error creating partner');
-    } finally {
-      if (connection) connection.end();
-    }
-  },
-
-  updatePartner: async (req, res) => {
-    const { id } = req.params;
-    const { name, link } = req.body;
-    let image = '';
-
-    if (req.files && req.files.image) {
-      const file = req.files.image;
-      console.log('Simulating uploading file: ', file.name);
-      image = file.name; // Simulate storing file name in database
-    }
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      await connection.execute('UPDATE partners SET name = ?, image = ?, link = ? WHERE id = ?', [name, image, link, parseInt(id)]);
-      res.json({ id, name, image, link });
-    } catch (error) {
-      console.error('Error updating partner:', error);
-      res.status(500).send('Error updating partner');
-    } finally {
-      if (connection) connection.end();
-    }
-  },
-
-  deletePartner: async (req, res) => {
-    const { id } = req.params;
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      await connection.execute('DELETE FROM partners WHERE id = ?', [parseInt(id)]);
-      res.status(204).send();
-    } catch (error) {
-      console.error('Error deleting partner:', error);
-      res.status(500).send('Error deleting partner');
-    } finally {
-      if (connection) connection.end();
-    }
-  },
 };
 
 module.exports = PartnerController;

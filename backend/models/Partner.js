@@ -1,17 +1,17 @@
 const pool = require('../config'); // Import the database connection pool
 
-const Category = {
+const Partner = {
     getAll: async () => {
         try {
             const connection = await pool.getConnection();
             try {
-                const [rows] = await connection.execute('SELECT * FROM categories');
+                const [rows] = await connection.execute('SELECT * FROM partners');
                 return rows;
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error('Error getting all categories:', error);
+            console.error('Error getting all partners:', error);
             throw error;
         }
     },
@@ -20,51 +20,51 @@ const Category = {
         try {
             const connection = await pool.getConnection();
             try {
-                const [rows] = await connection.execute('SELECT * FROM categories WHERE id = ?', [id]);
+                const [rows] = await connection.execute('SELECT * FROM partners WHERE id = ?', [id]);
                 return rows[0];
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error getting category with id ${id}:`, error);
+            console.error(`Error getting partner with id ${id}:`, error);
             throw error;
         }
     },
 
-    create: async (categoryData) => {
-        const { name, description, image, parent_category_id } = categoryData;
+    create: async (partnerData) => {
+        const { name, image, link } = partnerData;
         try {
             const connection = await pool.getConnection();
             try {
                 const [result] = await connection.execute(
-                    'INSERT INTO categories (name, description, image, parent_category_id) VALUES (?, ?, ?, ?)',
-                    [name, description, image, parent_category_id]
+                    'INSERT INTO partners (name, image, link) VALUES (?, ?, ?)',
+                    [name, image, link]
                 );
-                return { id: result.insertId, ...categoryData };
+                return { id: result.insertId, ...partnerData };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error('Error creating category:', error);
+            console.error('Error creating partner:', error);
             throw error;
         }
     },
 
-    update: async (id, categoryData) => {
-        const { name, description, image, parent_category_id } = categoryData;
+    update: async (id, partnerData) => {
+        const { name, image, link } = partnerData;
         try {
             const connection = await pool.getConnection();
             try {
                 await connection.execute(
-                    'UPDATE categories SET name = ?, description = ?, image = ?, parent_category_id = ? WHERE id = ?',
-                    [name, description, image, parent_category_id, id]
+                    'UPDATE partners SET name = ?, image = ?, link = ? WHERE id = ?',
+                    [name, image, link, id]
                 );
-                return { id, ...categoryData };
+                return { id, ...partnerData };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error updating category with id ${id}:`, error);
+            console.error(`Error updating partner with id ${id}:`, error);
             throw error;
         }
     },
@@ -73,16 +73,16 @@ const Category = {
         try {
             const connection = await pool.getConnection();
             try {
-                await connection.execute('DELETE FROM categories WHERE id = ?', [id]);
-                return { message: 'Category deleted successfully' };
+                await connection.execute('DELETE FROM partners WHERE id = ?', [id]);
+                return { message: 'Partner deleted successfully' };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error deleting category with id ${id}:`, error);
+            console.error(`Error deleting partner with id ${id}:`, error);
             throw error;
         }
     }
 };
 
-module.exports = Category;
+module.exports = Partner;

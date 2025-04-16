@@ -1,77 +1,76 @@
-const mysql = require('mysql2/promise');
-const config = require('../config');
+const Slider = require('../models/Slider');
 
 const SliderController = {
-  // Get all slider items
-  getAllSliderItems: async (req, res) => {
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      const [rows] = await connection.execute('SELECT * FROM slider');
-      res.json(rows);
-    } catch (error) {
-      console.error('Error fetching slider items:', error);
-      res.status(500).send('Error fetching slider items');
-    } finally {
-      if (connection) connection.end();
+    getAllSliders: async (req, res) => {
+        try {
+            const sliders = await Slider.getAll();
+            res.json(sliders);
+        } catch (error) {
+            console.error('Error getting all sliders:', error);
+            res.status(500).json({ error: 'Error getting all sliders' });
+        }
     }
-  },
+    ,
 
-  // Create a new slider item
-  createSliderItem: async (req, res) => {
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-        const { quote } = req.body;
-        const image = req.body.image
-        console.log('Received image upload request:', image);
-        console.log('Received quote:', quote);
-        const [result] = await connection.execute('INSERT INTO slider (image, quote) VALUES (?, ?)', [image, quote]);
-        res.status(201).json({ id: result.insertId, image, quote });
-    } catch (error) {
-        console.error('Error creating slider item:', error);
-        console.log('Received image upload request:', req.body);
-        console.log('Received quote:', req.body.quote);
-      res.status(500).send('Error creating slider item');
-    } finally {
-      if (connection) connection.end();
-    }
-  },
+    getSliderById: async (req, res) => {
+        const sliderId = req.params.id;
+        try {
+            const connection = await pool.getConnection();
+            try {
+                const [sliders] = await connection.execute('SELECT * FROM slider WHERE id = ?', [sliderId]);
+                if (sliders.length === 0) {
+                    return res.status(404).json({ error: 'Slider not found' });
+                }
+                res.json(sliders[0]);
+            } finally {
+                connection.release();
+            }
+        } catch (err) {
+            console.error('Error getting slider:', err);
+            res.status(500).json({ error: 'Error getting slider' });
+        }
+    },
 
-  // Update an existing slider item
-  updateSliderItem: async (req, res) => {
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      const { id } = req.params;
-        const { quote } = req.body;
-        const image = req.body.image
-        console.log('Received image upload request:', image);
-        await connection.execute('UPDATE slider SET image = ?, quote = ? WHERE id = ?', [image, quote, id]);
-      res.json({ id, image, quote });
-    } catch (error) {
-      console.error('Error updating slider item:', error);
-      res.status(500).send('Error updating slider item');
-    } finally {
-      if (connection) connection.end();
-    }
-  },
+    createSlider: async (req, res) => {
+        const { image, quote } = req.body;
+        const sliderData = { image, quote };
+        try {
+            const newSlider = await Slider.create(sliderData);
+            res.status(201).json(newSlider);
+        }
+         catch (err)
+          {
+            console.error('Error creating slider:', err);
+            res.status(500).json({ error: 'Error creating slider' });
+        }
+    },
 
-  // Delete a slider item
-  deleteSliderItem: async (req, res) => {
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      const { id } = req.params;
-      await connection.execute('DELETE FROM slider WHERE id = ?', [id]);
-      res.status(204).send();
-    } catch (error) {
-      console.error('Error deleting slider item:', error);
-      res.status(500).send('Error deleting slider item');
-    } finally {
-      if (connection) connection.end();
-    }
-  },
+    updateSlider: async (req, res) => {
+        const sliderId = req.params.id;
+        const { image, quote } = req.body;
+        const sliderData = { image, quote };
+        try {
+            const updatedSlider = await Slider.update(sliderId, sliderData);
+             if (!updatedSlider) {
+                return res.status(404).json({ error: 'Slider not found' });
+            }
+        } catch (err) {
+            console.error('Error updating slider:', err);
+            res.status(500).json({ error: 'Error updating slider' });
+        }
+    },
+
+    deleteSlider: async (req, res) => {
+        const sliderId = req.params.id;
+        try {
+                await Slider.delete(sliderId);
+                res.status(200).json({ message: 'Slider deleted' });
+            } catch (error) {
+                console.error('Error deleting slider:', error);
+                res.status(500).json({ error: 'Error deleting slider' });
+            }
+        }
+    
 };
 
 module.exports = SliderController;

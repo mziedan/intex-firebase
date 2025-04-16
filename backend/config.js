@@ -1,6 +1,13 @@
-module.exports = {
-  host: 'localhost',
-  user: 'root',
-  password: 'password',
-  database: 'training_company',
-};
+const mysql = require('mysql2/promise');
+
+const pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'your_password',
+    database: 'courses_db',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
+
+module.exports = pool;

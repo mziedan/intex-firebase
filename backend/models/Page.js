@@ -1,17 +1,17 @@
 const pool = require('../config');
 
-const Course = {
+const Page = {
     getAll: async () => {
         try {
             const connection = await pool.getConnection();
             try {
-                const [rows] = await connection.execute('SELECT * FROM courses');
+                const [rows] = await connection.execute('SELECT * FROM pages');
                 return rows;
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error('Error getting all courses:', error);
+            console.error('Error getting all pages:', error);
             throw error;
         }
     },
@@ -20,51 +20,51 @@ const Course = {
         try {
             const connection = await pool.getConnection();
             try {
-                const [rows] = await connection.execute('SELECT * FROM courses WHERE id = ?', [id]);
+                const [rows] = await connection.execute('SELECT * FROM pages WHERE id = ?', [id]);
                 return rows[0];
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error getting course with id ${id}:`, error);
+            console.error(`Error getting page with id ${id}:`, error);
             throw error;
         }
     },
 
-    create: async (courseData) => {
-        const { category_id, code, name, duration, description, image } = courseData;
+    create: async (pageData) => {
+        const { title, content, image } = pageData;
         try {
             const connection = await pool.getConnection();
             try {
                 const [result] = await connection.execute(
-                    'INSERT INTO courses (category_id, code, name, duration, description, image) VALUES (?, ?, ?, ?, ?, ?)',
-                    [category_id, code, name, duration, description, image]
+                    'INSERT INTO pages (title, content, image) VALUES (?, ?, ?)',
+                    [title, content, image]
                 );
-                return { id: result.insertId, ...courseData };
+                return { id: result.insertId, ...pageData };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error('Error creating course:', error);
+            console.error('Error creating page:', error);
             throw error;
         }
     },
 
-    update: async (id, courseData) => {
-        const { category_id, code, name, duration, description, image } = courseData;
+    update: async (id, pageData) => {
+        const { title, content, image } = pageData;
         try {
             const connection = await pool.getConnection();
             try {
                 await connection.execute(
-                    'UPDATE courses SET category_id = ?, code = ?, name = ?, duration = ?, description = ?, image = ? WHERE id = ?',
-                    [category_id, code, name, duration, description, image, id]
+                    'UPDATE pages SET title = ?, content = ?, image = ? WHERE id = ?',
+                    [title, content, image, id]
                 );
-                return { id, ...courseData };
+                return { id, ...pageData };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error updating course with id ${id}:`, error);
+            console.error(`Error updating page with id ${id}:`, error);
             throw error;
         }
     },
@@ -73,16 +73,16 @@ const Course = {
         try {
             const connection = await pool.getConnection();
             try {
-                await connection.execute('DELETE FROM courses WHERE id = ?', [id]);
-                return { message: 'Course deleted successfully' };
+                await connection.execute('DELETE FROM pages WHERE id = ?', [id]);
+                return { message: 'Page deleted successfully' };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error deleting course with id ${id}:`, error);
+            console.error(`Error deleting page with id ${id}:`, error);
             throw error;
         }
     }
 };
 
-module.exports = Course;
+module.exports = Page;

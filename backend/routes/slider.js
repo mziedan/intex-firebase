@@ -1,6 +1,6 @@
 const express = require('express');
-const SliderController = require('../controllers/SliderController');
 const router = express.Router();
+const SliderController = require('../controllers/SliderController');
 
 router.get('/', SliderController.getAllSliders);
 router.get('/:id', SliderController.getSliderById);

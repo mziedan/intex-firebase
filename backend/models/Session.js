@@ -1,17 +1,17 @@
 const pool = require('../config'); // Import the database connection pool
 
-const Category = {
+const Session = {
     getAll: async () => {
         try {
             const connection = await pool.getConnection();
             try {
-                const [rows] = await connection.execute('SELECT * FROM categories');
+                const [rows] = await connection.execute('SELECT * FROM sessions');
                 return rows;
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error('Error getting all categories:', error);
+            console.error('Error getting all sessions:', error);
             throw error;
         }
     },
@@ -20,51 +20,51 @@ const Category = {
         try {
             const connection = await pool.getConnection();
             try {
-                const [rows] = await connection.execute('SELECT * FROM categories WHERE id = ?', [id]);
+                const [rows] = await connection.execute('SELECT * FROM sessions WHERE id = ?', [id]);
                 return rows[0];
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error getting category with id ${id}:`, error);
+            console.error(`Error getting session with id ${id}:`, error);
             throw error;
         }
     },
 
-    create: async (categoryData) => {
-        const { name, description, image, parent_category_id } = categoryData;
+    create: async (sessionData) => {
+        const { course_id, location, timeslot } = sessionData;
         try {
             const connection = await pool.getConnection();
             try {
                 const [result] = await connection.execute(
-                    'INSERT INTO categories (name, description, image, parent_category_id) VALUES (?, ?, ?, ?)',
-                    [name, description, image, parent_category_id]
+                    'INSERT INTO sessions (course_id, location, timeslot) VALUES (?, ?, ?)',
+                    [course_id, location, timeslot]
                 );
-                return { id: result.insertId, ...categoryData };
+                return { id: result.insertId, ...sessionData };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error('Error creating category:', error);
+            console.error('Error creating session:', error);
             throw error;
         }
     },
 
-    update: async (id, categoryData) => {
-        const { name, description, image, parent_category_id } = categoryData;
+    update: async (id, sessionData) => {
+        const { course_id, location, timeslot } = sessionData;
         try {
             const connection = await pool.getConnection();
             try {
                 await connection.execute(
-                    'UPDATE categories SET name = ?, description = ?, image = ?, parent_category_id = ? WHERE id = ?',
-                    [name, description, image, parent_category_id, id]
+                    'UPDATE sessions SET course_id = ?, location = ?, timeslot = ? WHERE id = ?',
+                    [course_id, location, timeslot, id]
                 );
-                return { id, ...categoryData };
+                return { id, ...sessionData };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error updating category with id ${id}:`, error);
+            console.error(`Error updating session with id ${id}:`, error);
             throw error;
         }
     },
@@ -73,16 +73,16 @@ const Category = {
         try {
             const connection = await pool.getConnection();
             try {
-                await connection.execute('DELETE FROM categories WHERE id = ?', [id]);
-                return { message: 'Category deleted successfully' };
+                await connection.execute('DELETE FROM sessions WHERE id = ?', [id]);
+                return { message: 'Session deleted successfully' };
             } finally {
                 connection.release();
             }
         } catch (error) {
-            console.error(`Error deleting category with id ${id}:`, error);
+            console.error(`Error deleting session with id ${id}:`, error);
             throw error;
         }
     }
 };
 
-module.exports = Category;
+module.exports = Session;
