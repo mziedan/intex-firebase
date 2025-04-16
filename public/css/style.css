@@ -1,0 +1,20 @@
+:root {
+  --main-color: #541000;
+}
+
+body {
+  margin: 0;  
+  font-family: sans-serif;
+}
+
+header {
+  background-color: var(--main-color);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+footer {
+  background-color: #f0f0f0;
+  padding: 1rem;
+  text-align: center;
+}
