@@ -29,14 +29,33 @@ INSERT INTO sessions (course_id, location, timeslot) VALUES
 (3, 'Room F', '16:00:00'),
 (4, 'Room G', '09:30:00'),
 (4, 'Room H', '14:30:00'),
-(5, 'Room I', '10:30:00'),
-(5, 'Room J', '15:30:00'),
+(5, 'Room I', '10:30:00'),(5, 'Room J', '15:30:00'),
 (6, 'Room K', '11:30:00');
-CREATE TABLE registrations (id INT AUTO_INCREMENT PRIMARY KEY, course_id INT, user_name VARCHAR(255), user_email VARCHAR(255), session_id INT, registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (course_id) REFERENCES courses(id), FOREIGN KEY (session_id) REFERENCES sessions(id));
-CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, user_name VARCHAR(255) NOT NULL, user_email VARCHAR(255) NOT NULL UNIQUE, user_password VARCHAR(255) NOT NULL, role ENUM('admin', 'user') DEFAULT 'user');
-INSERT INTO users (user_name, user_email, user_password, role) VALUES
-('admin', 'admin@training.com', 'adminpassword', 'admin'),
-('user', 'user@training.com', 'userpassword', 'user');
+CREATE TABLE registrations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id INT,
+    user_name VARCHAR(255),
+    user_email VARCHAR(255),
+    session_id INT,
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(id),
+    FOREIGN KEY (session_id) REFERENCES sessions(id)
+);
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_name VARCHAR(255) NOT NULL,
+  user_email VARCHAR(255) NOT NULL UNIQUE,
+  user_password VARCHAR(255) NOT NULL,
+  user_phone VARCHAR(20),
+  user_country VARCHAR(100),
+  role ENUM('admin', 'user') DEFAULT 'user'
+);
+INSERT INTO users (user_name, user_email, user_password, user_phone, user_country, role) VALUES 
+('admin', 'admin@training.com', '$2b$10$0zI74t3/Z0tZ74t691c1/uNq567w.606XlTzL/d039/lF/b39k', '+1234567890', 'USA', 'admin'),
+('user1', 'user1@training.com', '$2b$10$b8V54b4/k5lZ094.5/6F.e3r9w/b9039vV83/2/r039/lF/b39k', '+9876543210', 'Canada', 'user'),
+('user2', 'user2@training.com', '$2b$10$8p3.9v0F8p93450b6/b.9eF8r9w/9039vV83/2/r039/lF/b39k', '+1234567890', 'USA', 'user'),
+('user3', 'user3@training.com', '$2b$10$w9b9c6j901l3c9r8/934j0f6f9.f.9.4b20vV83/2/r039/lF/b39k', '+9876543210', 'Canada', 'user');
+
 
 CREATE TABLE slider (
     id INT AUTO_INCREMENT PRIMARY KEY,

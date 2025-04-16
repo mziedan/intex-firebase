@@ -7,6 +7,14 @@ This project is a full-featured website for an offline training company. It prov
 ## Features
 
 -   **Frontend**:
+    -   Basic HTML structure (`index.html`)
+    -   Global styling (`style.css`)
+    -   Main App component (`App.js`) to display the different pages.
+    -   Components:
+        -   `Header.js` (logo, menu, phone numbers, search bar, brochure, login/register, admin link)
+        -   `Footer.js` (contact info, form, map, copyright, terms & conditions, privacy policy)
+        - `Slider.js`: Component to display an auto-sliding image slider.
+    -   Pages:
 -   **Frontend**:
     -   Basic HTML structure (`index.html`)
     -   Global styling (`style.css`)
@@ -56,6 +64,10 @@ This project is a full-featured website for an offline training company. It prov
     - Admin can create, delete and update courses, categories, sessions, users, sliders, partners and custom pages.
     - Can manage image uploads.
 - **SEO**:
+- **User Security:**
+    - User passwords are now securely hashed using bcrypt before being stored in the database.
+    - User registration now requires name, email, password, phone, and country information.
+    - User login is validated using the secure bcrypt password comparison.
     - Meta tags and open graph tags added to the `index.html` file.
 - **SEO**:
     - Meta tags and open graph tags added to the `index.html` file.
@@ -182,5 +194,21 @@ This project is a full-featured website for an offline training company. It prov
     -   Run the command `npm start`.
 3.  **Access the Frontend:**
     -   The frontend will be accessible at `http://localhost:3001` by default.
+
+## User Security
+
+-   **Password Hashing:**
+    -   User passwords are now securely hashed using the bcrypt library before being stored in the database.
+    -   This ensures that even if the database is compromised, user passwords remain protected.
+-   **Registration Information:**
+    -   User registration now requires the following fields:
+        -   `user_name` (user name).
+        -   `user_email` (user email).
+        -   `user_password` (user password).
+        - `user_phone` (user phone number).
+        - `user_country` (user country).
+
+- **Login Validation**:
+    - User login is validated using bcrypt.
 
 ## Database Schema
